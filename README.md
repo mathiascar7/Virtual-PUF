@@ -255,12 +255,15 @@ With six timing values, the vector has $6+5+4+1=16$ features. Each feature
 $f_i$ uses a quantization width determined by its group:
 
 
+
 | Group | Configured width |
 |---|---:|
-| Absolute timings | 1.2106 ps |
-| First differences | 2.5(1.2106) ps |
-| Second differences | 5.0(1.2106) ps |
-| Slope | 2.0(1.2106) ps |
+| Absolute timings | $1.2 \times 10^6$ ps |
+| First differences | $2.5 \times (1.2 \times 10^6)$ ps |
+| Second differences | $5.0 \times (1.2 \times 10^6)$ ps |
+| Slope | $2.0 \times (1.2 \times 10^6)$ ps |
+
+
 
 
 For each feature, the code calculates a bin index and its Gray code:
