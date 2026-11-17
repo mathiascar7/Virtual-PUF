@@ -246,7 +246,7 @@ $$
 1000\mathbf{t},\
 \Delta(1000\mathbf{t}),\
 \Delta^2(1000\mathbf{t}),\
-\operatorname{slope}(1000\mathbf{t})
+\mathrm{slope}(1000\mathbf{t})
 \right]
 $$
 
@@ -306,8 +306,8 @@ variance $\sigma^2$, then:
 
 
 $$
-\operatorname{Var}(\Delta t)=2\sigma^2,\qquad
-\operatorname{Var}(\Delta^2t)=(1^2+(-2)^2+1^2)\sigma^2=6\sigma^2
+\mathrm{Var}(\Delta t)=2\sigma^2,\qquad
+\mathrm{Var}(\Delta^2t)=(1^2+(-2)^2+1^2)\sigma^2=6\sigma^2
 $$
 
 
@@ -376,7 +376,7 @@ also estimates derived from CPU load, not direct motherboard readings.
 
 The engine divides the 128 raw bits into blocks of seven. During enrollment, it
 generates a $K=\lfloor128/7\rfloor=18$-bit random secret $S$ and expands
-each bit by repeating it seven times, $C=\operatorname{rep}_7(S)$. The first
+each bit by repeating it seven times, $C=\mathrm{rep}_7(S)$. The first
 $N=7K=126$ bits of the signature are combined with the codeword:
 
 
@@ -405,7 +405,7 @@ calculates:
 
 
 $$
-K_{out}=\operatorname{SHA256}(\operatorname{UTF8}(\hat{S}))
+K_{out}=\mathrm{SHA256}(\mathrm{UTF8}(\hat{S}))
 $$
 
 
