@@ -1,0 +1,132 @@
+========================================================================
+PUF RESEARCH DASHBOARD - INVERTED HIERARCHY K=128-BIT TELEMETRY REPORT
+Engine Version : attractor_sota_128k_v11_4_log_normalized_key (Derivative-First + Flex Key)
+Secret Width   : K = 128 bits (2^128 states, ECC-7 + Toeplitz)
+Warmup Policy  : 3 discarded captures x 24 bursts
+Export Folder  : C:\Users\HP ENVY\Downloads\Crytography Test
+========================================================================
+
+### TAB 1: HOST HW ###
+[SYSTEM RESOURCE & TIMING TELEMETRY (CAPTURE AVERAGE)]
+Avg CPU Load           : 20.0%
+Avg RAM Usage          : 48.4%
+End-to-End Capture Lat.: 8.98 ms (24 GC-isolated bursts x 48 probes)
+
+[STAGE 1: DERIVATIVE HIERARCHY FIRST -> EXPECTED BASELINE]
+Architecture Order     : Derivatives (d3->d1,d2,inter-bank) FIRST -> Flexible Key SECOND
+Global Clock Median    : 4750.0 ns (Ref: 6750.0 ns | Scale: 0.704x)
+Ephemeral Live-d3 Norm : 2.5263 (Alpha Smoother: 0.5886)
+Hierarchy Struct Dist  : 0.7761 (Envelope: 0.0278)
+Baseline Drift Ratio   : 1.1139 (DIFFERENT EXPECTED BASELINE (> 1.0 -> SHIFTED))
+
+[STAGE 2: FLEXIBLE KEY GENERATION (WIDE BINS + ECC-7 + TOEPLITZ)]
+Flexible Bin Width     : 0.0550 (Full Host flexibility preserved)
+Aligned Probes         : 6/6 probes aligned
+Baseline Shift Gain    : 7.05x (1.00x on Host, >7x on Foreign Baseline)
+8x8 Trap Activation    : TRIGGERED (BOMB)
+Intra-Signature BER    : 49.32% across 1,024 bits (ECC-7 corrects up to 42.8%)
+
+[BANK 0 DERIVATIVE HIERARCHY VECTORS (16-D OF 128-D)]
+t_raw (ns)    : [4600.0, 4500.0, 4400.0, 4350.0, 4350.0, 4400.0]
+r_clean       : [0.96321, 0.93976, 0.92655, 0.92031, 0.92448, 0.92426]
+d1    (1st)   : [-0.0243, -0.01158, -0.00534, 0.00392, -0.00123]
+d2    (2nd)   : [0.01272, 0.00624, 0.00926, -0.00515]
+slope (/probe): -0.007053
+
+[DERIVED CRYPTOGRAPHIC KEY (SHA-256 OF 128-BIT TOEPLITZ SECRET)]
+Expected Master Key    : 76893f9f67177d5b7a069980c1a520ad0da2bd6eb98871424607418f31882b7f
+Live Recovered Key     : d77b77091222141a0ff8d8d00dc822980f9440579d1c56a739c279098d6a1cc2
+
+[1,024-BIT DISPERSED GRAY SIGNATURE (256-HEX / HEAD 128-BIT BINARY)]
+Hex[0..127] : a1e64189e8d0f8979aca8cac24eabf547277ac938c948614c1d9c5037afed8d0
+Bin[0..127] : 1010000111100110010000011000100111101000110100001111100010010111
+              1001101011001010100011001010110000100100111010101011111101010100
+
+### TAB 2: STATS SUITE ###
+NODE              KEYS   STAB.    HD MEAN      STD(s)   d-PRIME  TEMP
+--------------------------------------------------------------------------
+PC 0 (Real Host)  955      4.6%   46.67%(In)   10.29%    REF      35.0°C
+PC 1 (Alpha)      1000     0.1%   49.45%       0.83%    0.38     35.0°C
+PC 2 (Beta)       1000     0.1%   50.82%       0.97%    0.57     35.0°C
+PC 3 (Gamma)      1000     0.1%   49.36%       1.03%    0.37     35.0°C
+--------------------------------------------------------------------------
+SYSTEM TELEMETRY (N=1,000) -> AVG CPU LOAD: 11.3%  |  AVG RAM USAGE: 48.3%
+
+[SYSTEM RESOURCE TELEMETRY (N=1,000 TRIALS AVERAGE)]
+Evaluated Node         : PC 0 (Real Host) (Stability: 4.6%)
+Warmup & Capture Pool  : 3 discarded + 24 steady captures (n_bursts=24)
+Avg CPU Load           : 11.3%
+Avg RAM Usage          : 48.3%
+
+[STAGE 1 -> STAGE 2 AVERAGED TELEMETRY - attractor_sota_128k_v11_4_log_normalized_key]
+Pre-Hash Secret Width  : K = 128 bits (2^128 states | ECC-7 + Toeplitz Extractor)
+Flexible Key Bin Width : 0.0550 (Full Host flexibility)
+Avg Clock Scale Factor : 0.704x (Cancelled before Stage 2)
+Avg Baseline Drift     : 1.1077 (DIFFERENT EXPECTED BASELINE (> 1.0))
+Avg Live-d3 Norm       : 6.9302 (Alpha: 0.6915)
+Avg Baseline Shift Gain: 6.62x
+8x8 Trap Activation    : TRIGGERED (95.4% BOMB)
+
+[AVERAGED BANK-0 DERIVATIVE HIERARCHY VECTORS (MEAN OVER 1,000 TRIALS)]
+r_clean: [0.96283, 0.93637, 0.92746, 0.92333, 0.92611, 0.92288]
+d1     : [-0.02634, -0.00864, -0.00388, 0.003, -0.00329]
+d2     : [0.0177, 0.00476, 0.00688, -0.00629]
+
+[DERIVED CRYPTOGRAPHIC KEY (SHA-256)]
+Expected Master Key    : 76893f9f67177d5b7a069980c1a520ad0da2bd6eb98871424607418f31882b7f
+Primary Recovered Key  : 76893f9f67177d5b7a069980c1a520ad0da2bd6eb98871424607418f31882b7f
+
+[1,024-BIT CONSENSUS GRAY SIGNATURE (HEX HEAD / BINARY HEAD)]
+Hex[0..127] : a1e645ddb89078b59ae88c8e26cae3756236ac938c940495c1dbc5a372fcd0d8
+Bin[0..127] : 1010000111100110010001011101110110111000100100000111100010110101
+              1001101011101000100011001000111000100110110010101110001101110101
+
+### TAB 5: COMPLEXITY ###
+[SYSTEM RESOURCE & THROUGHPUT TELEMETRY (N=1,000 ITERATIONS)]
+Avg CPU Load              : 11.9%
+Avg RAM Usage             : 48.3%
+Mean Pipeline Latency     : 688.07 us (P99 Tail: 1044.82 us)
+Key Derivation Throughput : 1,453 derivations / second
+
+[STAGE-BY-STAGE ASYMPTOTIC & EMPIRICAL BREAKDOWN (INVERTED FLOW)]
+1. Stage 1 Derivative Hierarchy First    : O(N) time | O(1) space -> 502.74 us
+2. Stage 2 Flexible Key + ECC-7 + Toepl. : O(K*M) time | O(1) space -> 173.32 us
+3. Stage 2 Final SHA-256 Digest          : O(K) time | O(1) space -> 1.10 us
+4. Ephemeral 1,024b CSPRNG RAM Blinding  : O(L) time | O(1) space -> 10.92 us
+
+[SOTA CRYPTOGRAPHIC & INFORMATION-THEORETIC SECURITY BOUNDS]
+• Stage 1 Expected Baseline   : Full d3->d1,d2 & inter-bank hierarchy runs FIRST
+• Stage 2 Flexible Key Bins   : Wide bins preserved -> 100% Host stability
+• Repetition Error Correction : ECC-7 over 146 blocks (Corrects up to t = 3 flips/block)
+• Universal Privacy Amplifier : 128x146 Toeplitz Matrix Extractor (Leftover Hash Lemma)
+• Pre-Hash Secret Width       : K = 128 bits (2^128 = 3.40e38 states; Offline Brute-Force Immune)
+• Side-Channel Leakage Bound  : 1st-order Welch |t_max| < 4.5 across all 1,024 blinded bits
+
+### TAB 6: TVLA AUDITOR ###
+[PILLAR 1] STAGE 1 DERIVATIVE BASELINE VS 6 ADVERSARIAL VECTORS
+ • Spoof Key Recovery   : 1/5,000 (0.02%)
+ • Cross-HD & Shift Gain: 49.50% (Gain: 8.52x)
+ • 8x8 Grid Landmine Hit: 100.0% Trap Activation
+ • Foreign Silicon M0-3 : 0/3334 (0.00%)
+ • Gaussian Noise M4    : 1/833 (0.12%)
+ • Curve-Cloning M5     : 0/833 (0.00%)
+
+[PILLAR 2] STAGE 2 STABILITY, SHANNON (H1) & NIST SP 800-90B (H_inf)
+ • Host Key Stability   : 42.5% (Raw BER: 27.96%)
+ • Shannon Entropy (H1) : 0.9998 b/bit (Balance: 0.4993)
+ • NIST 800-90B H_inf   : 0.8810 b/bit min | 0.9319 b/bit avg
+ • Effective Min-Entropy: 112.8 / 128 bits (MCV p_u=0.5430)
+
+[PILLAR 3] INTERLEAVED FIXED-VS-RANDOM TVLA (1,024-BIT RAM)
+ • Welch TVLA |t_max|   : 3.2555 (Threshold < 4.5)
+ • Chi-Square Uniformity: 0.9837 (Ideal: ~1.0)
+ • Blinded Trace Mean(u): 0.5004 (Ideal: 0.5000)
+
+KEY VERIFICATION & AUDIT VERDICT:
+[ FURTHER ANALYSIS REQUIRED ]
+EVALUATED AT N=5,000 | AVG CPU: 10.8% | AVG RAM: 48.1%
+• Host Key Stability: 42.5% (Raw BER: 27.96%).
+• External & Curve-Clone Spoof Rate: 0.02% (Gain: 8.52x).
+• Entropy: H1=0.9998 b/bit | NIST 800-90B H_inf=0.8810 b/bit (112.8b).
+• Fixed-vs-Random TVLA |t_max|: 3.2555 (< 4.5 across 1,024b).
+
