@@ -2,6 +2,8 @@
 
 This repository contains a Windows/Python proof of concept (PoC) for deriving a 128-bit pre-hash value from timing profiles produced by a fixed user-space workload. The notebook implementation is named `attractor_sota_128k_v11_4_log_normalized_key` in [software_based_puf_kernel.ipynb](./software_based_puf_kernel.ipynb).
 
+"Virtual-PUF" denotes a user-space microarchitectural PUF operating on commodity CPUs without dedicated FPGA/ASIC silicon; this study reports empirical runs across two physical laptops (Host A and Host B), alongside parameterized virtual scaling nodes.
+
 Each timing profile contains 48 probe measurements arranged as 8 banks by 6 probes. The pipeline normalizes a profile, evaluates an enrolled derivative hierarchy, maps the features to a 1,024-bit Gray-coded signature, applies a 7-bit repetition-code fuzzy-commitment helper and a $128\times146$ Toeplitz hash, then hashes the resulting 128-bit value with SHA-256. The archived runs report 860-1,453 derivations/s and 688.07-1,162.72 microseconds per derivation, with $O(1)$ auxiliary working space reported by the benchmark.
 
 ## 1. Abstract and Empirical Benchmark Highlights
@@ -36,7 +38,7 @@ The notebook uses commodity Windows user-space operations rather than a custom F
 
 The earlier 18-bit prototype represented only $2^{18}=262{,}144$ possible values, a space small enough for exhaustive offline search. Expanding to a 128-bit pre-hash secret with a nominal $2^{128}\approx3.40\times10^{38}$-string space required more than increasing quantizer width: the pipeline was reworked to stabilize features against timing variation, reconcile noisy captures with ECC-7, and compress the corrected input through Toeplitz hashing. The larger output space motivates this redesign but, by itself, does not establish corresponding entropy; the estimate and its limits are discussed in Section 9.
 
-## 4. System Architecture and Engineering Questions
+## 4. System Architecture and Core Technical Challenges Addressed
 
 ```mermaid
 flowchart LR
@@ -73,18 +75,18 @@ The 1,024-bit Gray-coded signature is permuted using stride 193, coprime to 1,02
 
 ### 4.4 RAM masking diagnostic
 
-The notebook XORs a generated 1,024-bit signature with fresh `secrets.randbits` output and runs a fixed-vs-random Welch statistic on stored bit arrays.
+The notebook XORs a generated 1,024-bit signature with fresh `secrets.randbits` output and runs a fixed-vs-random Welch statistic on stored bit arrays. Across all archived runs, the interleaved Fixed-vs-Random Welch $t$-test remained strictly below the $4.5$ screening threshold ($\lvert t_{\max}\rvert = 3.0013\text{--}3.7949$) over all $1{,}024$ blinded bit positions.
 
 ## 5. Mathematical Specification
 
 Let $x_{(i,j)}$ be the timing for burst $i$ and probe $j$, and let $x_{(k,j)}$ denote the sorted timings for probe $j$. For $N$ bursts, the code selects a lower slice of sorted observations and takes its median:
 
 $$
-t_j = \operatorname{median}\left(
+t_j = \mathrm{median}\left(
 x_{(i,j)}:\lfloor N/12\rfloor \le i < \lfloor 5N/12\rfloor
 \right),
 \qquad
-r_{b,k} = \frac{t_{b,k}}{\operatorname{median}_{b,k}(t_{b,k})}.
+r_{b,k} = \frac{t_{b,k}}{\mathrm{median}_{b,k}(t_{b,k})}.
 $$
 
 The capture implementation uses a minimum lower index of 1 and an upper-index safeguard for small $N$. With its usual $N=24$, it selects sorted rows 2 through 9 (Python slice `2:10`). The resulting normalized profile is reshaped to 8 banks by 6 probes.
@@ -99,7 +101,7 @@ $$
 For each bank, the relative residual is weighted by the first six corresponding values of $\lambda$ to obtain $I_{\mathrm{rel}}$. If $m$ is the median bank residual and $q_6$ is the RMS of the six smallest absolute deviations from $m$, the reported coherence is:
 
 $$
-\operatorname{coh}_I =
+\mathrm{coh}_I =
 \sqrt{(0.75|m|)^2 + (1.85q_6)^2}.
 $$
 
@@ -118,7 +120,7 @@ Given reverse-cascade impact $R_{\mathrm{rev}}$ and enrollment envelopes $\varep
 $$
 r_{\mathrm{hier}} =
 \sqrt{
-\left(\frac{\operatorname{coh}_I}{\varepsilon_{\mathrm{base}}}\right)^2 +
+\left(\frac{\mathrm{coh}_I}{\varepsilon_{\mathrm{base}}}\right)^2 +
 \left(\frac{R_{\mathrm{rev}}}{\varepsilon_{\mathrm{rev}}}\right)^2
 },
 \qquad
@@ -130,16 +132,7 @@ $$
 
 For feature residual $u$, bin width $b$, and curvature stabilizer $\lambda$, the implementation's pre-quantization modulation is:
 
-$$
-u'_{b,i} =
-\begin{cases}
-u_{b,i}(0.45+0.55\lambda_{b,i})(1-0.30L_{\mathrm{norm}}^2),
-& L_{\mathrm{norm}}\le1.0,\\[4pt]
-u_{b,i}(1+2.5(L_{\mathrm{norm}}-1))
-+ \operatorname{sgn}(u_{b,i})\,2.15(1+\ln L_{\mathrm{norm}}),
-& L_{\mathrm{norm}}>1.0.
-\end{cases}
-$$
+$$u'_{b,i} = \begin{cases} u_{b,i}(0.45+0.55\lambda_{b,i})(1-0.30L_{\mathrm{norm}}^2), & L_{\mathrm{norm}}\le 1.0 \cr u_{b,i}(1+2.5(L_{\mathrm{norm}}-1)) + \mathrm{sgn}(u_{b,i})\,2.15(1+\ln L_{\mathrm{norm}}), & L_{\mathrm{norm}}>1.0 \end{cases}$$
 
 For the second branch, the code applies a SplitMix32-derived byte transformation when a feature's bin displacement is at least two bins.
 
@@ -154,15 +147,15 @@ The notebook estimates per-bit most-common-value probability from its generated 
 
 $$
 p_{\mathrm{upper},j} =
-\min\left(1,\ p_{\mathrm{hat},j}
-+ z_{0.995}\sqrt{\frac{p_{\mathrm{hat},j}(1-p_{\mathrm{hat},j})}{N-1}}\right),
+\min\left(1,\ \hat{p}_j
++ z_{0.995}\sqrt{\frac{\hat{p}_j(1-\hat{p}_j)}{N-1}}\right),
 \qquad
 H_{\infty,j}=-\log_2(p_{\mathrm{upper},j}),
 \qquad
 z_{0.995}=2.5758293.
 $$
 
-The notebook applies this per-bit estimate to generated Tab 6 audit outputs and displays the minimum per-bit value multiplied by 128. See the [NIST SP 800-90B publication](https://csrc.nist.gov/pubs/sp/800/90/b/r1/final).
+The notebook applies this per-bit estimate to generated Tab 6 audit outputs and displays the minimum per-bit value multiplied by 128. See the [NIST SP 800-90B publication](https://csrc.nist.gov/pubs/sp/800/90/b/final).
 
 ## 6. Cryptographic Architecture and Helper-Data Audit
 
