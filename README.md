@@ -132,7 +132,9 @@ $$
 
 For feature residual $u$, bin width $b$, and curvature stabilizer $\lambda$, the implementation's pre-quantization modulation is:
 
-$$u'_{b,i} = \begin{cases} u_{b,i}(0.45+0.55\lambda_{b,i})(1-0.30L_{\mathrm{norm}}^2), & L_{\mathrm{norm}}\le 1.0 \cr u_{b,i}(1+2.5(L_{\mathrm{norm}}-1)) + \mathrm{sgn}(u_{b,i})\,2.15(1+\ln L_{\mathrm{norm}}), & L_{\mathrm{norm}}>1.0 \end{cases}$$
+$$
+u'_{b,i} = \begin{cases} u_{b,i}(0.45+0.55\lambda_{b,i})(1-0.30L_{\mathrm{norm}}^2), & L_{\mathrm{norm}}\le 1.0 \cr u_{b,i}(1+2.5(L_{\mathrm{norm}}-1)) + \mathrm{sgn}(u_{b,i})\,2.15(1+\ln L_{\mathrm{norm}}), & L_{\mathrm{norm}}>1.0 \end{cases}
+$$
 
 For the second branch, the code applies a SplitMix32-derived byte transformation when a feature's bin displacement is at least two bins.
 
@@ -146,13 +148,7 @@ $$
 The notebook estimates per-bit most-common-value probability from its generated audit outputs. With $\hat{p}_j=\max(p_j,1-p_j)$, it computes:
 
 $$
-p_{\mathrm{upper},j} =
-\min\left(1,\ \hat{p}_j
-+ z_{0.995}\sqrt{\frac{\hat{p}_j(1-\hat{p}_j)}{N-1}}\right),
-\qquad
-H_{\infty,j}=-\log_2(p_{\mathrm{upper},j}),
-\qquad
-z_{0.995}=2.5758293.
+p_{\mathrm{upper},j} = \min\left(1,\, \hat{p}_j + z_{0.995}\sqrt{\frac{\hat{p}_j(1-\hat{p}_j)}{N-1}}\right), \qquad H_{\infty,j} = -\log_2(p_{\mathrm{upper},j}), \qquad z_{0.995} = 2.5758293.
 $$
 
 The notebook applies this per-bit estimate to generated Tab 6 audit outputs and displays the minimum per-bit value multiplied by 128. See the [NIST SP 800-90B publication](https://csrc.nist.gov/pubs/sp/800/90/b/final).
